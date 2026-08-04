@@ -122,7 +122,11 @@
 
   /* ── edges ── */
   .edge { fill: none; stroke: var(--ink); stroke-width: 1.6; transition: opacity .4s; }
-  .edge.drawn { stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw 1.9s ease forwards; }
+  .edge.drawn {
+    stroke-dasharray: 900; stroke-dashoffset: 900;
+    animation: draw var(--edge-draw-duration, .72s) ease forwards;
+    animation-delay: var(--edge-draw-delay, 0s);
+  }
   @keyframes draw { to { stroke-dashoffset: 0; } }
   .edge.cut { opacity: .1; }
   .latent-edge {
@@ -385,6 +389,8 @@
 const ACC = '#E4572E';
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SCROLL_MODE = REDUCED_MOTION ? 'auto' : 'smooth';
+const EDGE_DRAW_SECONDS = 0.72;
+const EDGE_STEP_SECONDS = 0.80;
 
 const NODES = {
   about:    { label: 'About',    sub: 'the root',         tip: 'who I am', w: 150, h: 62 },
@@ -447,7 +453,8 @@ function build() {
     const A = NODES[f], B = NODES[t];
     const d = edgePath(V.pos[f], V.pos[t], V.curves[f + '-' + t], A.w/2, A.h/2, B.w/2, B.h/2);
     const marker = REDUCED_MOTION ? ' marker-end="url(#arr)"' : '';
-    html += `<path class="edge drawn" id="e${i}" data-to="${t}" d="${d}"${marker} style="animation-delay:${(i*0.2).toFixed(2)}s"/>`;
+    const delay = (i * EDGE_STEP_SECONDS).toFixed(2);
+    html += `<path class="edge drawn" id="e${i}" data-to="${t}" d="${d}"${marker} style="--edge-draw-duration:${EDGE_DRAW_SECONDS}s;--edge-draw-delay:${delay}s"/>`;
   });
 
   ['research', 'papers'].forEach((t, i) => {
