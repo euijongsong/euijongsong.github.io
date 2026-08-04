@@ -123,11 +123,14 @@
   /* ── edges ── */
   .edge { fill: none; stroke: var(--ink); stroke-width: 1.6; transition: opacity .4s; }
   .edge.drawn {
-    stroke-dasharray: 900; stroke-dashoffset: 900;
-    animation: draw var(--edge-draw-duration, 1.15s) ease forwards;
-    animation-delay: var(--edge-draw-delay, 0s);
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: draw 1.9s ease forwards;
   }
   @keyframes draw { to { stroke-dashoffset: 0; } }
+  .moving-arrowhead path {
+    fill: none; stroke: var(--ink); stroke-width: 1.6;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
   .edge.cut { opacity: .1; }
   .latent-edge {
     stroke-dasharray: 4 4 !important; opacity: .5; animation: none !important;
@@ -389,8 +392,8 @@
 const ACC = '#E4572E';
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SCROLL_MODE = REDUCED_MOTION ? 'auto' : 'smooth';
-const EDGE_DRAW_SECONDS = 1.15;
-const EDGE_STEP_SECONDS = 1.25;
+const EDGE_DRAW_SECONDS = 1.9;
+const EDGE_STAGGER_SECONDS = 0.2;
 
 const NODES = {
   about:    { label: 'About',    sub: 'the root',         tip: 'who I am', w: 150, h: 62 },
@@ -442,6 +445,7 @@ function edgePath(a, b, c, hwA, hhA, hwB, hhB) {
 
 function build() {
   const V = VIEW[mode];
+  let movingHeads = '';
   let html = `<defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M 0 1 L 9 5 L 0 9" fill="none" stroke="#1a1a1a" stroke-width="1.5"/></marker>
@@ -453,8 +457,16 @@ function build() {
     const A = NODES[f], B = NODES[t];
     const d = edgePath(V.pos[f], V.pos[t], V.curves[f + '-' + t], A.w/2, A.h/2, B.w/2, B.h/2);
     const marker = REDUCED_MOTION ? ' marker-end="url(#arr)"' : '';
-    const delay = (i * EDGE_STEP_SECONDS).toFixed(2);
-    html += `<path class="edge drawn" id="e${i}" data-to="${t}" d="${d}"${marker} style="--edge-draw-duration:${EDGE_DRAW_SECONDS}s;--edge-draw-delay:${delay}s"/>`;
+    const delay = (i * EDGE_STAGGER_SECONDS).toFixed(2);
+    html += `<path class="edge drawn" id="e${i}" data-to="${t}" d="${d}" pathLength="1"${marker} style="animation-delay:${delay}s"/>`;
+    if (!REDUCED_MOTION) {
+      movingHeads += `<g class="moving-arrowhead" opacity="0" aria-hidden="true">
+        <path d="M -8 -4 L 0 0 L -8 4"/>
+        <animate attributeName="opacity" from="0" to="1" dur="0.01s" begin="${delay}s" fill="freeze"/>
+        <animateMotion path="${d}" dur="${EDGE_DRAW_SECONDS}s" begin="${delay}s" fill="freeze" rotate="auto"
+          calcMode="spline" keyTimes="0;1" keySplines="0.25 0.1 0.25 1"/>
+      </g>`;
+    }
   });
 
   ['research', 'papers'].forEach((t, i) => {
@@ -462,6 +474,8 @@ function build() {
     const d = edgePath(V.latent, V.pos[t], V.latentCurves[i], V.latentR, V.latentR, B.w/2, B.h/2);
     html += `<path class="edge latent-edge" data-to="${t}" d="${d}" marker-end="url(#arrF)"/>`;
   });
+
+  html += movingHeads;
 
   Object.entries(NODES).forEach(([k, n]) => {
     const [x, y] = V.pos[k];
@@ -480,6 +494,7 @@ function build() {
   const svg = document.getElementById('stage');
   svg.setAttribute('viewBox', V.vb);
   svg.innerHTML = html;
+  if (!REDUCED_MOTION && typeof svg.setCurrentTime === 'function') svg.setCurrentTime(0);
 }
 
 /* ── 노드 이벤트 (툴팁 / 클릭 / 길게 누르기 / 키보드) ── */
@@ -554,18 +569,8 @@ function observeU() {
 }
 
 /* ── 렌더 (모드 전환 시 재렌더, 관측 상태 유지) ── */
-function attachArrowheads() {
-  if (REDUCED_MOTION) return;
-  document.querySelectorAll('.edge.drawn').forEach(edge => {
-    edge.addEventListener('animationend', () => {
-      edge.setAttribute('marker-end', 'url(#arr)');
-    }, { once: true });
-  });
-}
-
 function renderGraph() {
   build();
-  attachArrowheads();
   attachNodes();
   if (uObserved) applyObservedVisual();
 }
