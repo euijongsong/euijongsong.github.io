@@ -383,7 +383,8 @@
 
 <script>
 const ACC = '#E4572E';
-const SCROLL_MODE = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SCROLL_MODE = REDUCED_MOTION ? 'auto' : 'smooth';
 
 const NODES = {
   about:    { label: 'About',    sub: 'the root',         tip: 'who I am', w: 150, h: 62 },
@@ -445,7 +446,8 @@ function build() {
   EDGES.forEach(([f, t], i) => {
     const A = NODES[f], B = NODES[t];
     const d = edgePath(V.pos[f], V.pos[t], V.curves[f + '-' + t], A.w/2, A.h/2, B.w/2, B.h/2);
-    html += `<path class="edge drawn" id="e${i}" data-to="${t}" d="${d}" marker-end="url(#arr)" style="animation-delay:${(i*0.2).toFixed(2)}s"/>`;
+    const marker = REDUCED_MOTION ? ' marker-end="url(#arr)"' : '';
+    html += `<path class="edge drawn" id="e${i}" data-to="${t}" d="${d}"${marker} style="animation-delay:${(i*0.2).toFixed(2)}s"/>`;
   });
 
   ['research', 'papers'].forEach((t, i) => {
@@ -545,8 +547,18 @@ function observeU() {
 }
 
 /* ── 렌더 (모드 전환 시 재렌더, 관측 상태 유지) ── */
+function attachArrowheads() {
+  if (REDUCED_MOTION) return;
+  document.querySelectorAll('.edge.drawn').forEach(edge => {
+    edge.addEventListener('animationend', () => {
+      edge.setAttribute('marker-end', 'url(#arr)');
+    }, { once: true });
+  });
+}
+
 function renderGraph() {
   build();
+  attachArrowheads();
   attachNodes();
   if (uObserved) applyObservedVisual();
 }
