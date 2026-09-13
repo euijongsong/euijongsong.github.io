@@ -36,670 +36,258 @@
 </script>
 <style>
   :root {
-    --ink: #1a1a1a;
-    --bg: #fdfdfb;
-    --muted: #777;
-    --faint: #b9b9b2;
-    --line: #e4e4de;
-    --acc: #E4572E;
+    color-scheme: light dark;
+    --paper: #faf9f6;
+    --ink: #282924;
+    --muted: #62645c;
+    --rule: #d9dbd2;
+    --link: #365d50;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --ink: #e8e8e4;
-      --bg: #14161a;
-      --muted: #9a9a92;
-      --faint: #565660;
-      --line: #2a2d33;
-      --acc: #ff7a52;
+      --paper: #191c1a;
+      --ink: #e4e6de;
+      --muted: #b2b8ad;
+      --rule: #3e463f;
+      --link: #a5caba;
     }
-    /* 어두운 배경에서 가독성을 위해 하드코딩 회색들을 밝게 보정 */
-    section p, section li, .pub .authors { color: #b6b6b0; }
-    .pub .authors b { color: var(--ink); }
-    .fig2 .hedge { stroke: var(--faint); }
-    /* SVG 마커(화살표) 색상도 테마에 맞춰 반전 */
-    #stage marker#arr path { stroke: var(--ink); }
-    #stage marker#arrF path, .fig2 marker#arr2 path { stroke: var(--faint); }
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 24px; }
   body {
-    background: var(--bg); color: var(--ink);
-    font-family: "Avenir Next", "Helvetica Neue", "Apple SD Gothic Neo", sans-serif;
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.65 Georgia, "Times New Roman", serif;
+    -webkit-text-size-adjust: 100%;
   }
-  a { color: var(--acc); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  /* ── hero: 헤더 + 큰 그래프가 첫 화면을 가득 채움 ── */
-  .hero {
-    min-height: 100vh; display: flex; flex-direction: column;
-    justify-content: center; padding: 36px 20px 24px;
+  .page { max-width: 864px; margin: 0 auto; padding: 62px 32px 32px; }
+  a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--link); outline-offset: 5px;
   }
-  header { text-align: center; }
-  header h1 { font-size: 34px; font-weight: 600; letter-spacing: -0.5px; }
-  header h1 .kname { font-size: 16px; color: #999; font-weight: 400; }
-  header p { margin-top: 8px; color: var(--muted); font-size: 16px; }
-
-  .graph-wrap {
-    position: relative; width: min(1040px, 96vw); margin: 10px auto 0;
+  .skip-link {
+    position: absolute; top: 8px; left: 16px;
+    padding: 8px 12px; background: var(--paper); transform: translateY(-160%);
   }
-  svg {
-    width: 100%; height: auto; display: block;
-    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  .skip-link:focus { transform: none; }
+  .sans, h2, h3, nav, .affiliation, .contact-links, .dates, .venue, footer {
+    font-family: "Helvetica Neue", Helvetica, Arial, "Apple SD Gothic Neo", sans-serif;
   }
-  /* 좁은 화면: 세로형 배치로 전환되므로 캔버스 폭 제한 */
-  @media (max-width: 640px) {
-    .graph-wrap { width: min(430px, 96vw); }
-    header h1 { font-size: 28px; }
-    header p { font-size: 14px; }
+  .heading { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+  h1 { margin: 0; font-size: 42px; line-height: 1.2; font-weight: 400; letter-spacing: -1px; }
+  .kname { display: inline-block; margin-left: 10px; font: 16px/1.4 "Apple SD Gothic Neo", sans-serif; color: var(--muted); letter-spacing: 0; }
+  .affiliation { margin: 12px 0 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
+  .sketch { width: 116px; height: 84px; flex: 0 0 auto; color: var(--muted); }
+  nav { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+  nav a { display: inline-block; padding: 4px 0; color: var(--ink); text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  main { padding-top: 25px; }
+  section { margin: 0 0 38px; }
+  h2 { margin: 0 0 14px; font-size: 18px; line-height: 1.35; font-weight: 600; }
+  h3 { margin: 28px 0 12px; font-size: 14px; line-height: 1.5; font-weight: 600; }
+  p { margin: 0 0 14px; }
+  .contact-links { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 14px; }
+  .contact-links a { display: inline-block; padding: 3px 0; }
+  #sec-about { margin-bottom: 30px; }
+  #sec-research p { margin-bottom: 0; }
+  #sec-papers { padding-top: 24px; border-top: 1px solid var(--rule); }
+  .papers { list-style: none; padding: 0; margin: 0; }
+  .papers li + li { margin-top: 24px; }
+  .paper-title { margin: 0 0 3px; font: 17px/1.45 Georgia, "Times New Roman", serif; }
+  .paper-title a { color: var(--ink); }
+  .authors { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .authors strong { color: var(--ink); font-weight: 400; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  .venue { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+  #sec-cv { padding-top: 24px; border-top: 1px solid var(--rule); }
+  #sec-cv > h3:first-of-type { margin-top: 0; }
+  .cv-list { list-style: none; padding: 0; margin: 0; }
+  .cv-list li { display: grid; grid-template-columns: 126px minmax(0, 1fr); gap: 16px; margin-bottom: 16px; }
+  .dates { padding-top: 3px; color: var(--muted); font-size: 13px; }
+  .cv-list p { margin: 0; font-size: 16px; line-height: 1.5; }
+  .cv-list .detail { margin-top: 3px; color: var(--muted); font-size: 14px; }
+  .skills { display: grid; grid-template-columns: 126px minmax(0, 1fr); gap: 7px 16px; margin: 0; font-size: 14px; }
+  .skills dt { color: var(--muted); }
+  .skills dd { margin: 0; }
+  #sec-unobserved { margin-bottom: 26px; }
+  #sec-unobserved p { font-size: 16px; }
+  #sec-contact { margin-bottom: 0; }
+  footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 12px; }
+  footer p { margin: 0; }
+  @media (max-width: 600px) {
+    .page { padding: 32px 22px 24px; }
+    h1 { font-size: 34px; }
+    .kname { font-size: 14px; margin-left: 6px; }
+    .heading { gap: 10px; }
+    .sketch { width: 66px; height: 58px; }
+    .affiliation { font-size: 13px; }
+    nav { gap: 4px 18px; margin-top: 18px; }
+    body { font-size: 16px; }
+    main { padding-top: 22px; }
+    .cv-list li { grid-template-columns: 1fr; gap: 3px; margin-bottom: 20px; }
+    .skills { grid-template-columns: 92px minmax(0, 1fr); gap: 8px 12px; }
+    .paper-title { font-size: 16px; }
   }
-
-  .figcap {
-    margin-top: 2px; text-align: center; color: var(--muted); font-size: 14px;
-    font-family: Georgia, serif;
+  @media (max-width: 360px) {
+    .sketch { display: none; }
+    .page { padding-right: 18px; padding-left: 18px; }
   }
-  .figcap b { font-style: normal; }
-  .figcap i { font-style: italic; }
-
-  .scroll-hint {
-    width: max-content; margin: 26px auto 0; padding: 9px 15px;
-    display: flex; align-items: center; gap: 8px;
-    color: var(--ink); background: var(--bg); border: 1px solid var(--line);
-    border-radius: 999px; box-shadow: 0 4px 18px rgba(0,0,0,.08);
-    font-size: 13px; font-weight: 500; letter-spacing: .1px;
-    animation: bob 2.2s ease-in-out infinite;
-    transition: color .18s, border-color .18s, box-shadow .18s;
-  }
-  .scroll-hint .scroll-arrow { color: var(--acc); font-size: 17px; line-height: 1; }
-  .scroll-hint:hover {
-    color: var(--acc); border-color: var(--acc); text-decoration: none;
-    box-shadow: 0 5px 22px rgba(0,0,0,.12);
-  }
-  @media (max-width: 640px) {
-    .scroll-hint { margin-top: 18px; font-size: 12.5px; }
-  }
-  @keyframes bob { 50% { transform: translateY(5px); } }
-
-  /* ── edges ── */
-  .edge { fill: none; stroke: var(--ink); stroke-width: 1.6; transition: opacity .4s; }
-  .edge.drawn {
-    stroke-dasharray: 1; stroke-dashoffset: 1;
-    animation: draw 1.9s ease forwards;
-  }
-  @keyframes draw { to { stroke-dashoffset: 0; } }
-  .moving-arrowhead path {
-    fill: none; stroke: var(--ink); stroke-width: 1.6;
-    stroke-linecap: round; stroke-linejoin: round;
-  }
-  .edge.cut { opacity: .1; }
-  .latent-edge {
-    stroke-dasharray: 4 4 !important; opacity: .5; animation: none !important;
-  }
-  /* ── nodes ── */
-  .node { cursor: pointer; }
-  .node rect, .node circle { fill: var(--bg); stroke: var(--ink); stroke-width: 1.8; transition: all .18s ease; }
-  .node text { text-anchor: middle; dominant-baseline: middle; }
-  .node .t { font-size: 16px; font-weight: 600; fill: var(--ink); }
-  .node .s { font-size: 10.5px; fill: #999; }
-  .node:hover rect, .node:hover circle { fill: var(--ink); }
-  .node:hover .t, .node:hover .s { fill: var(--bg); }
-  .node.active rect, .node.active circle { stroke: var(--acc); stroke-width: 2.6; }
-  .node.active .t { fill: var(--acc); }
-  .node.active:hover rect, .node.active:hover circle { fill: var(--acc); }
-  .node.active:hover .t, .node.active:hover .s { fill: var(--bg); }
-  .node.latent circle { stroke-dasharray: 4 4; }
-  .node.latent .t { font-style: italic; font-weight: 500; }
-
-  /* U가 '관측'된 이후: 점선 → 실선, 액센트 표시 */
-  .node.latent.observed circle {
-    stroke-dasharray: none; stroke: var(--acc);
-    transform-box: fill-box; transform-origin: center;
-    animation: observePulse .6s ease;
-  }
-  .node.latent.observed .t { fill: var(--acc); }
-  .node.latent.observed .s { fill: var(--acc); }
-  .node.latent.observed:hover circle { fill: var(--acc); }
-  .node.latent.observed:hover .t, .node.latent.observed:hover .s { fill: var(--bg); }
-  /* 관측되면 일반 엣지와 완전히 동일한 모양(실선·잉크색 화살촉·불투명) */
-  .latent-edge.observed { stroke-dasharray: none !important; opacity: 1; }
-  @keyframes observePulse { 50% { transform: scale(1.18); } }
-  .node:focus { outline: none; }
-  .node:focus-visible rect, .node:focus-visible circle { stroke: var(--acc); stroke-width: 2.6; }
-
-  .do-badge {
-    font-family: Georgia, serif; font-style: italic; font-size: 15px;
-    fill: var(--acc); text-anchor: middle; pointer-events: none;
-  }
-
-  .pop-emoji {
-    position: absolute; font-size: 23px; pointer-events: none; z-index: 6;
-    will-change: transform, opacity;
-  }
-
-  .tooltip {
-    position: absolute; pointer-events: none; background: var(--ink); color: var(--bg);
-    padding: 6px 11px; border-radius: 3px; font-size: 12.5px; opacity: 0;
-    transition: opacity .15s; white-space: nowrap; transform: translate(-50%, -140%); z-index: 5;
-  }
-
-  /* ── sections ── */
-  main { max-width: 680px; margin: 0 auto; padding: 28px 24px 40px; }
-  section { padding: 58px 0; border-top: 1px solid var(--line); }
-  section:first-child { padding-top: 40px; }
-  section h2 { font-size: 21px; margin-bottom: 18px; }
-  section h2::before { content: "→ "; color: #ccc; }
-  section p, section li { color: #555; font-size: 15.5px; line-height: 1.75; }
-  section ul { margin-top: 8px; padding-left: 20px; }
-  .pub { margin-bottom: 18px; font-size: 15.5px; line-height: 1.6; }
-  .pub .venue { color: var(--muted); font-size: 13px; }
-  .cvrow { display: flex; gap: 20px; margin-bottom: 14px; font-size: 15.5px; align-items: baseline; }
-  .cvrow .yr { color: var(--muted); width: 120px; flex-shrink: 0; font-size: 14.5px; }
-  .cvrow .sub { color: var(--muted); font-size: 13.5px; }
-  section h3 {
-    font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;
-    color: #aaa; margin: 34px 0 14px;
-  }
-  section h3:first-of-type { margin-top: 4px; }
-  .pub .authors { color: #555; font-size: 14px; }
-  .pub .authors b { color: var(--ink); font-weight: 600; }
-
-  #sec-unobserved { border-top: 1px dashed #ccc; }
-  #sec-unobserved h2::before { content: "⇢ "; }
-  #sec-unobserved h2 { font-style: italic; }
-  #sec-unobserved .note { font-size: 13.5px; color: var(--muted); font-style: italic; margin-bottom: 12px; }
-
-  /* Figure 2: U의 성분 분해 미니 DAG */
-  .fig2 { margin-top: 22px; position: relative; }
-  .fig2 .hnode { cursor: pointer; }
-  .fig2 svg { width: 100%; max-width: 530px; display: block; margin: 0 auto; }
-  .fig2 .hnode circle {
-    fill: var(--bg); stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: 4 4;
-    transition: transform .18s ease; transform-box: fill-box; transform-origin: center;
-  }
-  .fig2 .hnode:hover circle { transform: scale(1.12); stroke: var(--acc); }
-  .fig2 .hemoji { font-size: 21px; text-anchor: middle; dominant-baseline: middle; }
-  .fig2 .hlabel { font-size: 15px; fill: var(--muted); text-anchor: end; dominant-baseline: middle; }
-  .fig2 .hedge { fill: none; stroke: #9a9a94; stroke-width: 1.3; stroke-dasharray: 4 4; }
-  .fig2 .htarget rect { fill: var(--bg); stroke: var(--ink); stroke-width: 1.8; }
-  .fig2 .htarget .t { font-size: 17px; font-weight: 600; fill: var(--ink); text-anchor: middle; }
-  .fig2 .htarget .s { font-size: 11.5px; fill: #999; text-anchor: middle; }
-  .fig2 .figcap { margin-top: 10px; }
-
-  footer {
-    margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line);
-    color: #aaa; font-size: 12.5px; line-height: 1.7; text-align: center;
-  }
-
-  /* 위로 가기 (그래프로 복귀) */
-  .to-top {
-    position: fixed; right: 22px; bottom: 22px; z-index: 20;
-    width: 42px; height: 42px; border-radius: 50%;
-    border: 1.5px solid var(--ink); background: var(--bg); color: var(--ink);
-    font-size: 17px; cursor: pointer; opacity: 0; pointer-events: none;
-    transition: opacity .25s, background .18s, color .18s;
-  }
-  .to-top.show { opacity: 1; pointer-events: auto; }
-  .to-top:hover { background: var(--ink); color: var(--bg); }
-
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .edge.drawn { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
-    .scroll-hint { animation: none; }
-    .node.latent.observed circle { animation: none; }
-    .fig2 .hnode:hover circle { transform: none; }
-  }
-
-  /* ══ TRIAL #4: 노드에 옅은 그림자 (라이트 모드만) ══ */
-  .node rect, .node circle,
-  .fig2 .htarget rect, .fig2 .hnode circle {
-    filter: drop-shadow(0 1.5px 1.5px rgba(0,0,0,.12));
-  }
-  @media (prefers-color-scheme: dark) {
-    .node rect, .node circle,
-    .fig2 .htarget rect, .fig2 .hnode circle { filter: none; }
-  }
-
-  /* ══ TRIAL #5: 본문에 세리프 (논문 느낌) ══ */
-  section p, section li, .pub, .cvrow,
-  #sec-unobserved .note {
-    font-family: Georgia, "Times New Roman", "Apple SD Gothic Neo", serif;
+  @media print {
+    :root { --paper: white; --ink: black; --muted: #444; --rule: #bbb; --link: black; }
+    body { font-size: 11pt; }
+    .page { max-width: none; padding: 0; }
+    nav, .skip-link, footer { display: none; }
+    .papers li, .cv-list li { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+    a { text-decoration: none; }
+    section { margin-bottom: 24px; }
   }
 </style>
 </head>
 <body>
-
-<div class="hero" id="top">
+<a class="skip-link sans" href="#main">Skip to content</a>
+<div class="page" id="top">
   <header>
-    <h1>Euijong Song <span class="kname" lang="ko">송의종</span></h1>
-    <p>Ph.D. Student, Causal AI Lab · Department of Statistics, Seoul National University</p>
-  </header>
-  <div class="graph-wrap">
-    <svg id="stage" viewBox="0 0 1040 500" role="img"
-      aria-label="A directed acyclic graph used as navigation: About points to Research and CV; Research points to Papers and Contact; a dashed latent node U points to Research and Papers."></svg>
-    <div class="tooltip" id="tip"></div>
-  </div>
-  <p class="figcap"><b>Figure 1.</b> <i>The causal structure of this page.</i></p>
-  <a class="scroll-hint" href="#sec-about">
-    <span>click a node or scroll to explore</span>
-    <span class="scroll-arrow" aria-hidden="true">↓</span>
-  </a>
-</div>
-
-<main>
-  <section id="sec-about">
-    <h2>About</h2>
-    <p>I am a Ph.D. student (integrated M.S.–Ph.D. program) in the
-    Department of Statistics at Seoul National University, and a member of the
-    <a href="https://sites.google.com/view/gwpark" target="_blank" rel="noopener">Causal AI Lab</a>
-    advised by Prof. Gunwoong Park. My research focuses on the identifiability of
-    structural causal models (SCMs) beyond additive noise models, and on
-    deep-learning-based algorithms for learning them. Before turning to
-    statistics, I studied life sciences at
-    Konkuk University, where my interest in untangling cause and effect
-    first took root.</p>
-  </section>
-
-  <section id="sec-research">
-    <h2>Research</h2>
-    <ul>
-      <li>Identifiability of structural causal models (SCMs) beyond additive noise models</li>
-      <li>Deep-learning-based algorithms for learning such SCMs</li>
-      <li>Outlier-robust causal discovery for high-dimensional linear structural equation models</li>
-    </ul>
-  </section>
-
-  <section id="sec-cv">
-    <h2>CV</h2>
-    <h3>Education</h3>
-    <div class="cvrow"><span class="yr">2024 – Present</span><span>Ph.D. Student, Department of Statistics, Seoul National University <span class="sub">(integrated M.S.–Ph.D. program)</span><br>
-      <span class="sub"><a href="https://sites.google.com/view/gwpark" target="_blank" rel="noopener">Causal AI Lab</a> · Advisor: Prof. Gunwoong Park</span></span></div>
-    <div class="cvrow"><span class="yr">2019 – 2024</span><span>B.S. in Life Sciences, Konkuk University</span></div>
-    <h3>Projects</h3>
-    <div class="cvrow"><span class="yr">2024</span><span>Mountain Accident Risk Zone Prediction, Korean National Fire Agency<br>
-      <span class="sub">Predictive modeling for identifying high-risk mountain accident zones in South Korea</span></span></div>
-    <h3>Talks</h3>
-    <div class="cvrow"><span class="yr">2025</span><span>Outlier-Robust Approach for High-dimensional Linear Structural Equation Models<br>
-      <span class="sub">Kyushu University / SNU Statistics DS Workshop 2025, Kyushu</span></span></div>
-    <div class="cvrow"><span class="yr">2025</span><span>Outlier Robust Causal Discovery<br>
-      <span class="sub">LG Electronics CTO Seminar for Research Engineers</span></span></div>
-    <h3>Skills &amp; Languages</h3>
-    <div class="cvrow"><span class="yr">Programming</span><span>Python, R, MATLAB, LaTeX</span></div>
-    <div class="cvrow"><span class="yr">Languages</span><span>Korean (native), English (fluent), Japanese (intermediate)</span></div>
-  </section>
-
-  <section id="sec-papers">
-    <h2>Papers</h2>
-    <div class="pub">Convex Distance Operator Transport: Convex and Geometry-Preserving Information<br>
-      <span class="authors">Junhyoung Chung, <b>Euijong Song</b>, Won Hwa Kim, Gunwoong Park</span><br>
-      <span class="venue">ICML 2026 · <a href="https://openreview.net/forum?id=nPC7M7XLEv" target="_blank" rel="noopener">OpenReview ↗</a></span></div>
-    <div class="pub">Identifiability of Measurement-Error Variance in Errors-in-Variables Regression<br>
-      <span class="authors">Donguk Shin, Seunghwan Noh, <b>Euijong Song</b>, Gunwoong Park</span><br>
-      <span class="venue">Journal of the American Statistical Association (JASA), under revision</span></div>
-    <div class="pub">Plants recognize identity and intensity of herbivores to adaptively reconfigure metabolism<br>
-      <span class="authors">Min-Soo Choi, Myungju Go, Hyeok-Gyun Son, Donguk Shin, <b>Euijong Song</b>, Jong-Hoon Noh, Gwanhyeong Yu, Yoonkyoung Choi, Gunwoong Park</span><br>
-      <span class="venue">Nature Communications, under revision</span></div>
-  </section>
-
-  <section id="sec-contact">
-    <h2>Contact</h2>
-    <p><a href="mailto:brejsong@snu.ac.kr">brejsong@snu.ac.kr</a> ·
-      <a href="https://scholar.google.com/citations?hl=en&amp;user=JBpCyZYAAAAJ" target="_blank" rel="noopener">Google Scholar</a> ·
-      <a href="https://github.com/euijongsong" target="_blank" rel="noopener">GitHub</a></p>
-  </section>
-
-  <section id="sec-unobserved">
-    <h2>Unobserved</h2>
-    <p class="note">The unseen forces that quietly power everything above.</p>
-    <div class="fig2">
-      <svg viewBox="-20 0 530 370" role="img"
-        aria-label="Figure 2: table tennis, tennis, climbing, good eats and travel, each with a dashed arrow pointing into research.">
-        <defs>
-          <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M 0 1 L 9 5 L 0 9" fill="none" stroke="#9a9a94" stroke-width="1.5"/>
-          </marker>
-        </defs>
-        <path class="hedge" d="M 150 52 Q 230 80 301 168" marker-end="url(#arr2)"/>
-        <path class="hedge" d="M 150 120 Q 230 132 301 177" marker-end="url(#arr2)"/>
-        <path class="hedge" d="M 152 185 L 301 185" marker-end="url(#arr2)"/>
-        <path class="hedge" d="M 150 250 Q 230 238 301 193" marker-end="url(#arr2)"/>
-        <path class="hedge" d="M 150 318 Q 230 290 301 202" marker-end="url(#arr2)"/>
-
-        <g class="hnode"><circle cx="120" cy="45" r="28"/><text class="hemoji" x="120" y="47">🏓</text><text class="hlabel" x="82" y="49">table tennis</text></g>
-        <g class="hnode"><circle cx="120" cy="115" r="28"/><text class="hemoji" x="120" y="117">🎾</text><text class="hlabel" x="82" y="119">tennis</text></g>
-        <g class="hnode"><circle cx="120" cy="185" r="28"/><text class="hemoji" x="120" y="187">🧗</text><text class="hlabel" x="82" y="189">climbing</text></g>
-        <g class="hnode"><circle cx="120" cy="255" r="28"/><text class="hemoji" x="120" y="257">🍽️</text><text class="hlabel" x="82" y="259">good eats</text></g>
-        <g class="hnode"><circle cx="120" cy="325" r="28"/><text class="hemoji" x="120" y="327">✈️</text><text class="hlabel" x="82" y="329">travel</text></g>
-
-        <g class="htarget">
-          <rect x="310" y="154" width="170" height="62" rx="31"/>
-          <text class="t" x="395" y="179">Research</text>
-          <text class="s" x="395" y="199">the observed output</text>
+    <div class="heading">
+      <div>
+        <h1>Euijong Song <span class="kname" lang="ko">송의종</span></h1>
+        <p class="affiliation">Ph.D. student in Statistics<br>Seoul National University · Causal AI Lab</p>
+      </div>
+      <!-- A small nod to causal discovery, independent of page navigation. -->
+      <svg class="sketch" viewBox="0 0 116 84" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M23 24 L91 24 M23 28 L55 66 M91 28 L61 66"/>
+          <path d="M86 20 L92 24 L86 28 M48 62 L55 67 L53 59 M63 59 L60 67 L68 63"/>
+          <circle cx="16" cy="24" r="7"/>
+          <circle cx="100" cy="24" r="7"/>
+          <circle cx="58" cy="74" r="7"/>
         </g>
       </svg>
-      <p class="figcap"><b>Figure 2.</b> <i>A finer decomposition of U.</i></p>
     </div>
-  </section>
+    <nav aria-label="Page sections">
+      <a href="#sec-about">About</a>
+      <a href="#sec-research">Research</a>
+      <a href="#sec-papers">Papers</a>
+      <a href="#sec-cv">CV</a>
+      <a href="#sec-contact">Contact</a>
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section id="sec-about" aria-label="About">
+      <p>I am a Ph.D. student in the integrated M.S.–Ph.D. program in Statistics at
+      Seoul National University, advised by Gunwoong Park in the
+      <a href="https://sites.google.com/view/gwpark">Causal AI Lab</a>.
+      I work on causal discovery and structural causal models.</p>
+      <p>Before joining SNU in 2024, I studied life sciences at Konkuk University.</p>
+      <div class="contact-links">
+        <a href="mailto:brejsong@snu.ac.kr">brejsong@snu.ac.kr</a>
+        <a href="https://scholar.google.com/citations?hl=en&amp;user=JBpCyZYAAAAJ">Google Scholar</a>
+        <a href="https://github.com/euijongsong">GitHub</a>
+      </div>
+    </section>
+
+    <section id="sec-research" aria-labelledby="research-heading">
+      <h2 id="research-heading">Research</h2>
+      <p>My research concerns when structural causal models are identifiable beyond
+      additive noise assumptions, and how to learn them with deep learning.
+      I also work on outlier-robust causal discovery for high-dimensional
+      linear structural equation models.</p>
+    </section>
+
+    <section id="sec-papers" aria-labelledby="papers-heading">
+      <h2 id="papers-heading">Papers</h2>
+      <ol class="papers">
+        <li>
+          <h3 class="paper-title"><a href="https://openreview.net/forum?id=nPC7M7XLEv">Convex Distance Operator Transport: Convex and Geometry-Preserving Information</a></h3>
+          <p class="authors">Junhyoung Chung, <strong>Euijong Song</strong>, Won Hwa Kim, Gunwoong Park</p>
+          <p class="venue">ICML 2026 · <a href="https://openreview.net/forum?id=nPC7M7XLEv">OpenReview</a></p>
+        </li>
+        <li>
+          <h3 class="paper-title">Identifiability of Measurement-Error Variance in Errors-in-Variables Regression</h3>
+          <p class="authors">Donguk Shin, Seunghwan Noh, <strong>Euijong Song</strong>, Gunwoong Park</p>
+          <p class="venue">Journal of the American Statistical Association (JASA), under revision</p>
+        </li>
+        <li>
+          <h3 class="paper-title">Plants recognize identity and intensity of herbivores to adaptively reconfigure metabolism</h3>
+          <p class="authors">Min-Soo Choi, Myungju Go, Hyeok-Gyun Son, Donguk Shin, <strong>Euijong Song</strong>, Jong-Hoon Noh, Gwanhyeong Yu, Yoonkyoung Choi, Gunwoong Park</p>
+          <p class="venue">Nature Communications, under revision</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="sec-cv" aria-labelledby="cv-heading">
+      <h2 id="cv-heading">CV</h2>
+      <h3>Education</h3>
+      <ul class="cv-list">
+        <li>
+          <span class="dates">2024 – Present</span>
+          <div>
+            <p>Seoul National University</p>
+            <p class="detail">Ph.D. student in Statistics, integrated M.S.–Ph.D. program<br>
+            Causal AI Lab · Advisor: Gunwoong Park</p>
+          </div>
+        </li>
+        <li>
+          <span class="dates">2019 – 2024</span>
+          <div><p>Konkuk University</p><p class="detail">B.S. in Life Sciences</p></div>
+        </li>
+      </ul>
+
+      <h3>Project</h3>
+      <ul class="cv-list">
+        <li>
+          <span class="dates">2024</span>
+          <div>
+            <p>Mountain Accident Risk Zone Prediction</p>
+            <p class="detail">Korean National Fire Agency<br>
+            Predictive modeling to identify high-risk mountain accident zones in South Korea.</p>
+          </div>
+        </li>
+      </ul>
+
+      <h3>Talks</h3>
+      <ul class="cv-list">
+        <li>
+          <span class="dates">2025</span>
+          <div>
+            <p>Outlier-Robust Approach for High-dimensional Linear Structural Equation Models</p>
+            <p class="detail">Kyushu University / SNU Statistics DS Workshop 2025, Kyushu</p>
+          </div>
+        </li>
+        <li>
+          <span class="dates">2025</span>
+          <div>
+            <p>Outlier Robust Causal Discovery</p>
+            <p class="detail">LG Electronics CTO Seminar for Research Engineers</p>
+          </div>
+        </li>
+      </ul>
+
+      <h3>Tools &amp; languages</h3>
+      <dl class="skills">
+        <dt>Programming</dt><dd>Python, R, MATLAB, LaTeX</dd>
+        <dt>Languages</dt><dd>Korean (native), English (fluent), Japanese (intermediate)</dd>
+      </dl>
+    </section>
+
+    <section id="sec-unobserved" aria-labelledby="outside-heading">
+      <h2 id="outside-heading">Outside research</h2>
+      <p>I enjoy table tennis, tennis, climbing, good food, and travel.</p>
+    </section>
+
+    <section id="sec-contact" aria-labelledby="contact-heading">
+      <h2 id="contact-heading">Contact</h2>
+      <p><a href="mailto:brejsong@snu.ac.kr">brejsong@snu.ac.kr</a></p>
+    </section>
+  </main>
 
   <footer>
-    P.S. Press and hold any node to perform a <i>do</i>-intervention.<br>
-    This page supports the second rung of the ladder of causation.
+    <p>Euijong Song · <span lang="ko">송의종</span></p>
+    <a href="#top">Back to top</a>
   </footer>
-</main>
-
-<button class="to-top" id="toTop" title="back to the graph" aria-label="Back to the graph">↑</button>
-
-<script>
-const ACC = '#E4572E';
-const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const SCROLL_MODE = REDUCED_MOTION ? 'auto' : 'smooth';
-const EDGE_DRAW_SECONDS = 1.9;
-const EDGE_STAGGER_SECONDS = 0.2;
-
-const NODES = {
-  about:    { label: 'About',    sub: 'the root',         tip: 'who I am', w: 150, h: 62 },
-  research: { label: 'Research', sub: 'causal discovery', tip: 'causal discovery & DAG structure learning', w: 150, h: 62 },
-  cv:       { label: 'CV',       sub: 'trajectory',       tip: 'education & experience', w: 150, h: 62 },
-  papers:   { label: 'Papers',   sub: 'publications',     tip: 'publications', w: 150, h: 62 },
-  contact:  { label: 'Contact',  sub: 'the sink',         tip: 'get in touch — the sink node', w: 150, h: 62 },
-};
-const EDGES = [
-  ['about','research'], ['about','cv'], ['research','papers'],
-  ['research','contact'], ['cv','contact'], ['papers','contact'],
-];
-/* 데스크톱: 가로 산개형 / 모바일: 세로 산개형 — 한 화면에 전부 들어가도록 */
-const VIEW = {
-  desktop: {
-    vb: '0 0 1040 500', w: 1040,
-    pos: { about:[160,95], research:[400,225], cv:[720,80], papers:[490,405], contact:[900,370] },
-    latent: [210, 345], latentR: 36,
-    curves: { 'about-research':24, 'about-cv':-30, 'research-papers':30, 'research-contact':-42, 'cv-contact':30, 'papers-contact':18 },
-    latentCurves: [-14, 14],
-  },
-  mobile: {
-    vb: '0 0 560 770', w: 560,
-    pos: { about:[150,70], research:[250,285], cv:[425,160], papers:[255,545], contact:[415,715] },
-    latent: [95, 414], latentR: 36,
-    curves: { 'about-research':20, 'about-cv':-22, 'research-papers':22, 'research-contact':-30, 'cv-contact':32, 'papers-contact':15 },
-    latentCurves: [-14, 14],
-  },
-};
-const mq = window.matchMedia('(max-width: 640px)');
-let mode = mq.matches ? 'mobile' : 'desktop';
-
-const U_EMOJIS = ['🏓','🎾','🧗','🍽️','✈️','🏓','✨','✨'];
-
-function edgePath(a, b, c, hwA, hhA, hwB, hhB) {
-  const mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2;
-  let dx = b[0]-a[0], dy = b[1]-a[1];
-  const len = Math.hypot(dx, dy); dx/=len; dy/=len;
-  const ctrl = [mx - dy*c, my + dx*c];
-  const trim = (p, toward, hw, hh, pad) => {
-    let ux = toward[0]-p[0], uy = toward[1]-p[1];
-    const l = Math.hypot(ux, uy); ux/=l; uy/=l;
-    const d = Math.min(hw/Math.abs(ux || 1e-9), hh/Math.abs(uy || 1e-9)) + pad;
-    return [p[0]+ux*d, p[1]+uy*d];
-  };
-  const s = trim(a, ctrl, hwA, hhA, 2), e = trim(b, ctrl, hwB, hhB, 9);
-  return `M ${s[0].toFixed(1)} ${s[1].toFixed(1)} Q ${ctrl[0].toFixed(1)} ${ctrl[1].toFixed(1)} ${e[0].toFixed(1)} ${e[1].toFixed(1)}`;
-}
-
-function build() {
-  const V = VIEW[mode];
-  let movingHeads = '';
-  let html = `<defs>
-    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9" fill="none" stroke="#1a1a1a" stroke-width="1.5"/></marker>
-    <marker id="arrF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9" fill="none" stroke="#9a9a94" stroke-width="1.5"/></marker>
-  </defs>`;
-
-  EDGES.forEach(([f, t], i) => {
-    const A = NODES[f], B = NODES[t];
-    const d = edgePath(V.pos[f], V.pos[t], V.curves[f + '-' + t], A.w/2, A.h/2, B.w/2, B.h/2);
-    const marker = REDUCED_MOTION ? ' marker-end="url(#arr)"' : '';
-    const delay = (i * EDGE_STAGGER_SECONDS).toFixed(2);
-    html += `<path class="edge drawn" id="e${i}" data-to="${t}" d="${d}" pathLength="1"${marker} style="animation-delay:${delay}s"/>`;
-    if (!REDUCED_MOTION) {
-      movingHeads += `<g class="moving-arrowhead" opacity="0" aria-hidden="true">
-        <path d="M -8 -4 L 0 0 L -8 4"/>
-        <animate attributeName="opacity" from="0" to="1" dur="0.01s" begin="${delay}s" fill="freeze"/>
-        <animateMotion path="${d}" dur="${EDGE_DRAW_SECONDS}s" begin="${delay}s" fill="freeze" rotate="auto"
-          calcMode="spline" keyTimes="0;1" keySplines="0.25 0.1 0.25 1"/>
-      </g>`;
-    }
-  });
-
-  ['research', 'papers'].forEach((t, i) => {
-    const B = NODES[t];
-    const d = edgePath(V.latent, V.pos[t], V.latentCurves[i], V.latentR, V.latentR, B.w/2, B.h/2);
-    html += `<path class="edge latent-edge" data-to="${t}" d="${d}" marker-end="url(#arrF)"/>`;
-  });
-
-  html += movingHeads;
-
-  Object.entries(NODES).forEach(([k, n]) => {
-    const [x, y] = V.pos[k];
-    html += `<g class="node" id="node-${k}" data-key="${k}" tabindex="0" role="link" aria-label="Go to ${n.label} section">
-      <rect x="${x-n.w/2}" y="${y-n.h/2}" width="${n.w}" height="${n.h}" rx="31"/>
-      <text class="t" x="${x}" y="${y-6}">${n.label}</text>
-      <text class="s" x="${x}" y="${y+14}">${n.sub}</text></g>`;
-  });
-
-  const [ux, uy] = V.latent;
-  html += `<g class="node latent" id="node-unobserved" data-key="unobserved" tabindex="0" role="link" aria-label="Go to Unobserved section">
-    <circle cx="${ux}" cy="${uy}" r="${V.latentR}"/>
-    <text class="t" x="${ux}" y="${uy-5}">U</text>
-    <text class="s" x="${ux}" y="${uy+13}">unobserved</text></g>`;
-
-  const svg = document.getElementById('stage');
-  svg.setAttribute('viewBox', V.vb);
-  svg.innerHTML = html;
-  if (!REDUCED_MOTION && typeof svg.setCurrentTime === 'function') svg.setCurrentTime(0);
-}
-
-/* ── 노드 이벤트 (툴팁 / 클릭 / 길게 누르기 / 키보드) ── */
-const tip = document.getElementById('tip');
-const wrap = document.querySelector('.graph-wrap');
-const PRESS_MS = 600;
-let pressTimer = null, didIntervene = false;
-
-function attachNodes() {
-  document.querySelectorAll('.node').forEach(n => {
-    n.addEventListener('mouseenter', () => {
-      tip.textContent = n.dataset.key === 'unobserved'
-        ? (uObserved ? 'observed at last: 🏓 🎾 🧗 🍽️ ✈️' : 'latent variables — click to observe')
-        : NODES[n.dataset.key].tip;
-    });
-    n.addEventListener('mousemove', e => {
-      const r = wrap.getBoundingClientRect();
-      tip.style.left = (e.clientX - r.left) + 'px';
-      tip.style.top = (e.clientY - r.top) + 'px';
-      tip.style.opacity = 1;
-    });
-    n.addEventListener('mouseleave', () => tip.style.opacity = 0);
-
-    const startPress = () => {
-      didIntervene = false;
-      pressTimer = setTimeout(() => { didIntervene = true; intervene(n.dataset.key); }, PRESS_MS);
-    };
-    const cancelPress = () => clearTimeout(pressTimer);
-    n.addEventListener('mousedown', startPress);
-    n.addEventListener('mouseup', cancelPress);
-    n.addEventListener('mouseleave', cancelPress);
-    n.addEventListener('touchstart', startPress, { passive: true });
-    n.addEventListener('touchend', cancelPress);
-    n.addEventListener('touchmove', cancelPress);
-
-    n.addEventListener('click', () => {
-      if (didIntervene) { didIntervene = false; return; }
-      const key = n.dataset.key;
-      const go = () => {
-        const sec = document.getElementById('sec-' + key);
-        if (sec) sec.scrollIntoView({ behavior: SCROLL_MODE, block: 'start' });
-      };
-      if (key === 'unobserved') { popU(); setTimeout(go, 550); }
-      else go();
-    });
-
-    n.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        n.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      }
-    });
-  });
-}
-
-/* ── U 관측 상태 ── */
-let uObserved = false;
-function applyObservedVisual() {
-  const g = document.getElementById('node-unobserved');
-  g.classList.add('observed');
-  g.querySelector('.s').textContent = 'observed!';
-  g.setAttribute('aria-label', 'Go to Unobserved section (now observed)');
-  document.querySelectorAll('.latent-edge').forEach(e => {
-    e.classList.add('observed');
-    e.setAttribute('marker-end', 'url(#arr)'); // 옅은 화살촉 → 일반 잉크색 화살촉
-  });
-}
-function observeU() {
-  if (uObserved) return;
-  uObserved = true;
-  applyObservedVisual();
-}
-
-/* ── 렌더 (모드 전환 시 재렌더, 관측 상태 유지) ── */
-function renderGraph() {
-  build();
-  attachNodes();
-  if (uObserved) applyObservedVisual();
-}
-renderGraph();
-mq.addEventListener('change', e => {
-  mode = e.matches ? 'mobile' : 'desktop';
-  renderGraph();
-});
-
-/* ── 이모지 팝 헬퍼: container 내부 (x,y) 지점에서 이모지들이 사방으로 터짐 ── */
-function burst(container, x, y, emojis, spread) {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const s0 = spread || 1;
-  emojis.forEach((em, i) => {
-    const s = document.createElement('span');
-    s.className = 'pop-emoji';
-    s.textContent = em;
-    s.style.left = x + 'px';
-    s.style.top = y + 'px';
-    container.appendChild(s);
-    const ang = (Math.PI * 2 * i) / emojis.length + (Math.random() - .5) * .6;
-    const dist = (130 + Math.random() * 130) * s0;
-    const tx = (Math.cos(ang) * dist).toFixed(0), ty = (Math.sin(ang) * dist - 44 * s0).toFixed(0);
-    const rot = (Math.random() * 90 - 45).toFixed(0);
-    s.animate([
-      { transform: 'translate(-50%,-50%) scale(.3)', opacity: 1 },
-      { transform: `translate(calc(-50% + ${(tx*0.75).toFixed(0)}px), calc(-50% + ${(ty*0.75).toFixed(0)}px)) scale(1.25) rotate(${rot}deg)`, opacity: 1, offset: .72 },
-      { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1.3) rotate(${rot}deg)`, opacity: 0 }
-    ], { duration: 1100 + Math.random() * 300, easing: 'cubic-bezier(.17,.67,.4,1)' })
-      .onfinish = () => s.remove();
-  });
-}
-
-/* ── U 클릭: 잠재변수가 관측되는 순간 — 취미 이모지 팝 ── */
-function popU() {
-  const V = VIEW[mode];
-  const wrapR = wrap.getBoundingClientRect();
-  const svgR = document.getElementById('stage').getBoundingClientRect();
-  const scale = svgR.width / V.w;
-  const x = svgR.left - wrapR.left + V.latent[0] * scale;
-  const y = svgR.top - wrapR.top + V.latent[1] * scale;
-  burst(wrap, x, y, U_EMOJIS);
-}
-
-/* ── Figure 2: 취미 노드 클릭 시 그 이모지가 그 자리에서 팝 ── */
-document.querySelectorAll('.fig2 .hnode').forEach(node => {
-  node.setAttribute('tabindex', '0');
-  node.setAttribute('role', 'button');
-  const em = node.querySelector('.hemoji').textContent;
-  node.setAttribute('aria-label', node.querySelector('.hlabel').textContent + ' — tap to pop');
-  const pop = () => {
-    const fig = document.querySelector('.fig2');
-    const c = node.querySelector('circle').getBoundingClientRect();
-    const f = fig.getBoundingClientRect();
-    burst(fig, c.left + c.width / 2 - f.left, c.top + c.height / 2 - f.top,
-          [em, em, em, em, '✨', '✨'], 0.6);
-  };
-  node.addEventListener('click', pop);
-  node.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pop(); }
-  });
-});
-
-/* ── do() 개입: 들어오는 엣지 절단 ── */
-function intervene(key) {
-  const V = VIEW[mode];
-  const svg = document.getElementById('stage');
-  const node = document.getElementById('node-' + key);
-  const incoming = [...svg.querySelectorAll(`[data-to="${key}"]`)];
-  const pos = key === 'unobserved' ? V.latent : V.pos[key];
-  const halfH = key === 'unobserved' ? V.latentR : NODES[key].h / 2;
-
-  const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  badge.setAttribute('class', 'do-badge');
-  badge.setAttribute('x', pos[0]);
-  badge.setAttribute('y', pos[1] - halfH - 13);
-  badge.textContent = incoming.length
-    ? `do(${key === 'unobserved' ? 'U' : NODES[key].label})`
-    : 'already exogenous!';
-  svg.appendChild(badge);
-
-  incoming.forEach(e => e.classList.add('cut'));
-  const shapeEl = node.querySelector('rect, circle');
-  const prevStroke = shapeEl.style.stroke;
-  shapeEl.style.stroke = ACC;
-
-  setTimeout(() => {
-    incoming.forEach(e => e.classList.remove('cut'));
-    shapeEl.style.stroke = prevStroke;
-    badge.remove();
-  }, 2600);
-}
-
-/* ── scroll-sync: 현재 섹션의 노드를 액센트로 점등 ── */
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(en => {
-    if (!en.isIntersecting) return;
-    const key = en.target.id.replace('sec-', '');
-    if (key === 'unobserved') observeU();
-    document.querySelectorAll('.node').forEach(n =>
-      n.classList.toggle('active', n.dataset.key === key));
-  });
-}, { rootMargin: '-40% 0px -55% 0px' });
-document.querySelectorAll('section').forEach(s => observer.observe(s));
-
-/* 마지막 섹션은 화면 중앙 감지 띠에 못 닿을 수 있어 별도 감지:
-   섹션이 40% 이상 보이면 관측된 것으로 처리 */
-const uWatcher = new IntersectionObserver(entries => {
-  entries.forEach(en => { if (en.isIntersecting) { observeU(); uWatcher.disconnect(); } });
-}, { threshold: 0.4 });
-uWatcher.observe(document.getElementById('sec-unobserved'));
-
-/* ── 그래프로 돌아가기 버튼 ── */
-const toTop = document.getElementById('toTop');
-window.addEventListener('scroll', () => {
-  toTop.classList.toggle('show', window.scrollY > window.innerHeight * 0.7);
-  /* 히어로(그래프 화면)로 돌아오면 섹션 점등 전부 해제 */
-  if (window.scrollY < window.innerHeight * 0.35) {
-    document.querySelectorAll('.node.active').forEach(n => n.classList.remove('active'));
-  }
-  /* 페이지 맨 끝 도달 = Unobserved까지 봤다는 뜻 (폴백 트리거 + 노드 점등) */
-  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
-    observeU();
-    document.querySelectorAll('.node').forEach(n =>
-      n.classList.toggle('active', n.dataset.key === 'unobserved'));
-  }
-}, { passive: true });
-toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: SCROLL_MODE }));
-</script>
+</div>
 <!-- GoatCounter analytics (privacy-friendly, no cookies) -->
 <script data-goatcounter="https://brejsong.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
