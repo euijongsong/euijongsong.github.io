@@ -152,7 +152,7 @@ export function Unobserved() {
     <p className="unobserved-note">The unseen forces behind my research.</p>
     <div className="hobby-graph" ref={graph} role="group" aria-label="Five hobbies and research, with a feedback loop between research and travel">
       <svg className="hobby-edges" aria-hidden="true">
-        <defs><marker id="hobby-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="context-stroke" strokeWidth="1.5"/></marker></defs>
+        <defs><marker id="hobby-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#a4afc8" stroke="none"/></marker></defs>
         {paths.map(edge=><path key={edge.id} d={edge.d} data-from={edge.from} data-to={edge.to} className={`hobby-edge${route.ids.includes(edge.id)?' is-active':''}`} markerEnd="url(#hobby-arrow)"/>)}
         {pulse&&route.path&&<Signal key={pulse.sequence} path={route.path}/>}
       </svg>
