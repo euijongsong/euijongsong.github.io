@@ -22,5 +22,6 @@ files together. A push to `main` triggers the existing GitHub Pages deployment.
 
 The graph uses native anchors and retains compatibility with the former
 `#sec-about`, `#sec-research`, `#sec-cv`, `#sec-papers`, `#sec-contact`, and
-`#sec-unobserved` links. Self-hosted Lato is distributed under the license in
-`fonts/OFL.txt`.
+`#sec-unobserved` links. Headings use self-hosted Newsreader and body text uses
+self-hosted Source Sans 3. Their licenses are in `fonts/newsreader-OFL.txt` and
+`fonts/source-sans-3-OFL.txt`. Older Lato assets remain available for cached pages.
