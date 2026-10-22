@@ -67,36 +67,33 @@ const hobbies=[
   {id:'table-tennis',label:'table tennis',emoji:'🏓',x:16,y:13},
   {id:'tennis',label:'tennis',emoji:'🎾',x:72,y:10},
   {id:'climbing',label:'climbing',emoji:'🧗',x:44,y:46},
-  {id:'good-eats',label:'good eats',emoji:'🍽️',x:45,y:88},
-  {id:'travel',label:'travel',emoji:'✈️',x:83,y:73},
+  {id:'good-eats',label:'good eats',emoji:'🍽️',x:79,y:91},
+  {id:'travel',label:'travel',emoji:'✈️',x:83,y:64},
 ];
-// Hobby-to-hobby lines describe loose associations, not causal claims.
+// A playful directed network, with one feedback loop between research and travel.
 const hobbyConnections=[
-  {from:0,to:1,curve:-16},
-  {from:2,to:4,curve:-12},
-  {from:4,to:3,curve:0},
+  {from:1,to:0,curve:16},
   {from:0,to:'research',curve:56},
   {from:2,to:'research',curve:0},
+  {from:'research',to:4,curve:-42},
+  {from:4,to:'research',curve:-42},
+  {from:4,to:3,curve:-10},
 ];
-function routeToResearch(start) {
-  const queue=[[start]], seen=new Set([start]);
-  while(queue.length) {
-    const route=queue.shift(), node=route.at(-1);
-    if(node==='research') return route;
-    for(const edge of hobbyConnections) {
-      const next=edge.from===node?edge.to:edge.to===node&&edge.to!=='research'?edge.from:null;
-      if(next!==null&&!seen.has(next)) {seen.add(next);queue.push([...route,next]);}
-    }
-  }
-  return [];
-}
+// Every signal follows arrow direction; the feedback loop runs once per click.
+const hobbyRoutes={
+  0:[0,'research'],
+  1:[1,0,'research'],
+  2:[2,'research'],
+  3:[4,3],
+  4:[4,'research',4],
+  research:['research',4,'research'],
+};
 function routeGeometry(route,edges) {
   let path='', ids=[];
   for(let i=1;i<route.length;i++) {
-    const edge=edges.find(e=>(e.from===route[i-1]&&e.to===route[i])||(e.to===route[i-1]&&e.from===route[i]));
+    const edge=edges.find(e=>e.from===route[i-1]&&e.to===route[i]);
     if(!edge) return {path:'',ids:[]};
-    const forward=edge.from===route[i-1];
-    const [center,start,end,finish]=forward?[edge.a,edge.start,edge.end,edge.b]:[edge.b,edge.end,edge.start,edge.a];
+    const [center,start,end,finish]=[edge.a,edge.start,edge.end,edge.b];
     path+=`${i===1?'M':'L'} ${center} L ${start} Q ${edge.control} ${end} L ${finish} `;
     ids.push(edge.id);
   }
@@ -132,7 +129,7 @@ export function Unobserved() {
       const next=hobbyConnections.map((edge,id)=>{
         const a=points[edge.from],b=points[edge.to],len=Math.hypot(b.x-a.x,b.y-a.y);
         const control={x:(a.x+b.x)/2-(b.y-a.y)/len*edge.curve,y:(a.y+b.y)/2+(b.x-a.x)/len*edge.curve};
-        const start=trim(a,control,false,4),end=trim(b,control,edge.to==='research',edge.to==='research'?7:4);
+        const start=trim(a,control,edge.from==='research',4),end=trim(b,control,edge.to==='research',7);
         return {...edge,id,a:[a.x,a.y],b:[b.x,b.y],control:[control.x,control.y],start,end,d:`M ${start} Q ${control.x},${control.y} ${end}`};
       });
       setPaths(previous=>JSON.stringify(previous)===JSON.stringify(next)?previous:next);
@@ -148,21 +145,22 @@ export function Unobserved() {
     setPulse({index,sequence:++sequence.current});
     timer.current=setTimeout(()=>setPulse(null),1500);
   };
-  const route=pulse?routeGeometry(routeToResearch(pulse.index),paths):{path:'',ids:[]};
+  const activeNodes=pulse?hobbyRoutes[pulse.index]:[];
+  const route=routeGeometry(activeNodes,paths);
   return <section id="unobserved" className="lower-section unobserved" tabIndex="-1" aria-labelledby="unobserved-title">
     <h2 id="unobserved-title">Unobserved</h2>
     <p className="unobserved-note">The unseen forces behind my research.</p>
-    <div className="hobby-graph" ref={graph} role="group" aria-label="A network of five hobbies connected to research">
+    <div className="hobby-graph" ref={graph} role="group" aria-label="Five hobbies and research, with a feedback loop between research and travel">
       <svg className="hobby-edges" aria-hidden="true">
         <defs><marker id="hobby-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="context-stroke" strokeWidth="1.5"/></marker></defs>
-        {paths.map(edge=><path key={edge.id} d={edge.d} className={`hobby-edge${route.ids.includes(edge.id)?' is-active':''}`} markerEnd={edge.to==='research'?'url(#hobby-arrow)':undefined}/>)}
+        {paths.map(edge=><path key={edge.id} d={edge.d} data-from={edge.from} data-to={edge.to} className={`hobby-edge${route.ids.includes(edge.id)?' is-active':''}`} markerEnd="url(#hobby-arrow)"/>)}
         {pulse&&route.path&&<Signal key={pulse.sequence} path={route.path}/>}
       </svg>
       <div className="hobby-list">{hobbies.map((hobby,i)=><button key={hobby.id} type="button" style={{'--x':`${hobby.x}%`,'--y':`${hobby.y}%`}} className={`hobby-node${pulse?.index===i?' is-active':''}`} onClick={()=>activate(i)}>
         <span className="hobby-label">{hobby.label}</span>
         <span className="hobby-orb" aria-hidden="true"><span key={pulse?.index===i?pulse.sequence:0} className="hobby-emoji">{hobby.emoji}</span>{pulse?.index===i&&<span key={`ring-${pulse.sequence}`} className="hobby-ring"/>}</span>
       </button>)}</div>
-      <div ref={target} className={`hobby-target${pulse?' is-active':''}`}><span>Research</span></div>
+      <button type="button" ref={target} className={`hobby-target${activeNodes.includes('research')?' is-active':''}`} onClick={()=>activate('research')}><span>Research</span></button>
     </div>
   </section>;
 }

@@ -48,11 +48,12 @@ html{scroll-behavior:smooth}
 .hobby-list{display:contents}
 .hobby-node{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);flex-direction:column-reverse;justify-content:center;width:100px;min-height:82px;gap:6px;border-radius:12px}
 .hobby-label{position:relative;padding:1px 4px;background:#fff;line-height:1.4}
-.hobby-target{left:17%;right:auto;top:75%;transform:translate(-50%,-50%);width:136px;height:54px}
+.hobby-target{left:17%;right:auto;top:67%;transform:translate(-50%,-50%);width:136px;height:54px;color:var(--ink);cursor:pointer;touch-action:manipulation}
 .hobby-edge.is-active{stroke:#a4afc8;stroke-width:1.8;stroke-dasharray:none}
 .hobby-signal{fill:#8a98b8}
 .hobby-node.is-active .hobby-orb{border-color:#8a98b8;background:#fff}
 .hobby-node:hover .hobby-orb,.hobby-node:focus-visible .hobby-orb{border-color:var(--ink);background:#fafbfc}
 .hobby-ring{border-color:#8a98b8}
 .hobby-target.is-active{border-color:var(--ink);color:var(--ink);background:#fafbfc;transition-delay:.85s}
+.hobby-target:hover,.hobby-target:focus-visible{background:#fafbfc}
 @media(max-width:600px){.hobby-graph{height:380px;margin-top:38px}.hobby-node{width:90px;min-height:78px;gap:5px}.hobby-target{left:18%;width:100px;height:48px}.hobby-label{font-size:15.5px}}
