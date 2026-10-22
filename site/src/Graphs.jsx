@@ -64,11 +64,11 @@ export function DAG({observed,onObserve}) {
 }
 
 const hobbies=[
-  {id:'table-tennis',label:'table tennis',emoji:'🏓',x:16,y:13},
+  {id:'table-tennis',label:'table tennis',emoji:'🏓',x:16,y:12},
   {id:'tennis',label:'tennis',emoji:'🎾',x:72,y:10},
-  {id:'climbing',label:'climbing',emoji:'🧗',x:44,y:46},
-  {id:'good-eats',label:'good eats',emoji:'🍽️',x:79,y:91},
-  {id:'travel',label:'travel',emoji:'✈️',x:83,y:64},
+  {id:'climbing',label:'climbing',emoji:'🧗',x:42,y:39},
+  {id:'good-eats',label:'good eats',emoji:'🍽️',x:62,y:88},
+  {id:'travel',label:'travel',emoji:'✈️',x:82,y:49},
 ];
 // A playful directed network, with one feedback loop between research and travel.
 const hobbyConnections=[
@@ -99,17 +99,44 @@ function routeGeometry(route,edges) {
   }
   return {path,ids};
 }
-function Signal({path}) {
+function Signal({path,duration}) {
   const motion=useRef(null);
   useEffect(()=>{
     if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) motion.current?.beginElement();
   },[]);
-  return <circle className="hobby-signal" r="3"><animateMotion ref={motion} begin="indefinite" dur="1s" path={path} fill="freeze"/></circle>;
+  return <circle className="hobby-signal" r="3"><animateMotion ref={motion} begin="indefinite" dur={`${duration}ms`} path={path} fill="freeze"/></circle>;
 }
-export function Unobserved() {
+export function Unobserved({revealKey=0}) {
   const graph=useRef(null), target=useRef(null), timer=useRef(null), sequence=useRef(0);
+  const revealTimers=useRef([]), revealWatcher=useRef(null);
   const [paths,setPaths]=useState([]);
   const [pulse,setPulse]=useState(null);
+  const [reveal,setReveal]=useState({run:0,phase:'complete'});
+  useEffect(()=>{
+    clearTimeout(timer.current);
+    setPulse(null);
+    const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+    const stop=()=>{
+      revealWatcher.current?.disconnect();
+      revealTimers.current.forEach(clearTimeout);
+      revealTimers.current=[];
+    };
+    const complete=()=>{stop();setReveal(previous=>({...previous,phase:'complete'}));};
+    if(motion.matches) {complete();return;}
+    setReveal(previous=>({...previous,phase:'pending'}));
+    revealWatcher.current=new IntersectionObserver(entries=>{
+      if(!entries.some(entry=>entry.isIntersecting)) return;
+      revealWatcher.current.disconnect();
+      revealTimers.current.push(setTimeout(()=>{
+        setReveal(previous=>({run:previous.run+1,phase:'drawing'}));
+        revealTimers.current.push(setTimeout(complete,2100));
+      },160));
+    },{threshold:.55});
+    revealWatcher.current.observe(graph.current);
+    const onMotionChange=()=>{if(motion.matches) complete();};
+    motion.addEventListener('change',onMotionChange);
+    return ()=>{stop();motion.removeEventListener('change',onMotionChange);};
+  },[revealKey]);
   useEffect(()=>{
     let mounted=true;
     const measure=()=>{
@@ -120,16 +147,31 @@ export function Unobserved() {
         return {x:box.left+box.width/2-bounds.left,y:box.top+box.height/2-bounds.top,w:box.width,h:box.height};
       };
       const points=[...graph.current.querySelectorAll('.hobby-orb')].map(point);
+      const labels=[...graph.current.querySelectorAll('.hobby-label')].map(element=>{
+        const box=element.getBoundingClientRect();
+        return {left:box.left-bounds.left,right:box.right-bounds.left,top:box.top-bounds.top,bottom:box.bottom-bounds.top};
+      });
       points.research=point(target.current);
       const trim=(p,c,rectangle,pad)=>{
         const dx=c.x-p.x,dy=c.y-p.y,len=Math.hypot(dx,dy),ux=dx/len,uy=dy/len;
         const distance=(rectangle?Math.min(p.w/2/Math.abs(ux||1e-9),p.h/2/Math.abs(uy||1e-9)):p.w/2)+pad;
         return [p.x+ux*distance,p.y+uy*distance];
       };
+      const clearLabel=(p,c,start,label)=>{
+        if(!label) return start;
+        const dx=c.x-p.x,dy=c.y-p.y,len=Math.hypot(dx,dy),ux=dx/len,uy=dy/len;
+        const interval=(min,max,origin,direction)=>Math.abs(direction)<1e-6
+          ?(origin>=min&&origin<=max?[-Infinity,Infinity]:[Infinity,-Infinity])
+          :[(min-origin)/direction,(max-origin)/direction].sort((a,b)=>a-b);
+        const x=interval(label.left-4,label.right+4,p.x,ux),y=interval(label.top-4,label.bottom+4,p.y,uy);
+        const near=Math.max(x[0],y[0]),far=Math.min(x[1],y[1]);
+        return near<=far&&far>0&&near<len?[p.x+ux*(far+5),p.y+uy*(far+5)]:start;
+      };
       const next=hobbyConnections.map((edge,id)=>{
         const a=points[edge.from],b=points[edge.to],len=Math.hypot(b.x-a.x,b.y-a.y);
         const control={x:(a.x+b.x)/2-(b.y-a.y)/len*edge.curve,y:(a.y+b.y)/2+(b.x-a.x)/len*edge.curve};
-        const start=trim(a,control,edge.from==='research',4),end=trim(b,control,edge.to==='research',7);
+        const start=clearLabel(a,control,trim(a,control,edge.from==='research',4),labels[edge.from]);
+        const end=trim(b,control,edge.to==='research',7);
         return {...edge,id,a:[a.x,a.y],b:[b.x,b.y],control:[control.x,control.y],start,end,d:`M ${start} Q ${control.x},${control.y} ${end}`};
       });
       setPaths(previous=>JSON.stringify(previous)===JSON.stringify(next)?previous:next);
@@ -142,19 +184,27 @@ export function Unobserved() {
   },[]);
   const activate=index=>{
     clearTimeout(timer.current);
-    setPulse({index,sequence:++sequence.current});
-    timer.current=setTimeout(()=>setPulse(null),1500);
+    revealWatcher.current?.disconnect();
+    revealTimers.current.forEach(clearTimeout);
+    revealTimers.current=[];
+    setReveal(previous=>({...previous,phase:'complete'}));
+    const duration=hobbyRoutes[index].length>2?1800:1150;
+    setPulse({index,sequence:++sequence.current,duration});
+    timer.current=setTimeout(()=>setPulse(null),duration+350);
   };
   const activeNodes=pulse?hobbyRoutes[pulse.index]:[];
   const route=routeGeometry(activeNodes,paths);
   return <section id="unobserved" className="lower-section unobserved" tabIndex="-1" aria-labelledby="unobserved-title">
     <h2 id="unobserved-title">Unobserved</h2>
     <p className="unobserved-note">The unseen forces behind my research.</p>
-    <div className="hobby-graph" ref={graph} role="group" aria-label="Five hobbies and research, with a feedback loop between research and travel">
+    <div className={`hobby-graph reveal-${reveal.phase}`} ref={graph} role="group" aria-label="Five hobbies and research, with a feedback loop between research and travel">
       <svg className="hobby-edges" aria-hidden="true">
-        <defs><marker id="hobby-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#a4afc8" stroke="none"/></marker></defs>
-        {paths.map(edge=><path key={edge.id} d={edge.d} data-from={edge.from} data-to={edge.to} className={`hobby-edge${route.ids.includes(edge.id)?' is-active':''}`} markerEnd="url(#hobby-arrow)"/>)}
-        {pulse&&route.path&&<Signal key={pulse.sequence} path={route.path}/>}
+        <defs>
+          <marker id="hobby-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#a4afc8" stroke="none"/></marker>
+          {paths.map((edge,i)=><mask key={`${edge.id}-${reveal.run}`} id={`hobby-reveal-${edge.id}`} maskUnits="userSpaceOnUse" x="-30" y="-30" width="800" height="500"><path className="hobby-edge-reveal" d={edge.d} pathLength="1" fill="none" stroke="white" strokeWidth="28" strokeLinecap="square" style={{'--edge-delay':`${i*.16}s`}}/></mask>)}
+        </defs>
+        {paths.map(edge=><path key={edge.id} d={edge.d} data-from={edge.from} data-to={edge.to} className={`hobby-edge${route.ids.includes(edge.id)?' is-active':''}`} markerEnd="url(#hobby-arrow)" mask={`url(#hobby-reveal-${edge.id})`}/>)}
+        {pulse&&route.path&&<Signal key={pulse.sequence} path={route.path} duration={pulse.duration}/>}
       </svg>
       <div className="hobby-list">{hobbies.map((hobby,i)=><button key={hobby.id} type="button" style={{'--x':`${hobby.x}%`,'--y':`${hobby.y}%`}} className={`hobby-node${pulse?.index===i?' is-active':''}`} onClick={()=>activate(i)}>
         <span className="hobby-label">{hobby.label}</span>

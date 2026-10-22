@@ -17,6 +17,7 @@ function Paper({paper}) {
 }
 export function App() {
   const [observed,setObserved]=useState(false);
+  const [hobbyReveal,setHobbyReveal]=useState(0);
   const observeTimer=useRef(null);
   useEffect(()=>{
     const followHash=(animate=false)=>{
@@ -46,6 +47,7 @@ export function App() {
     if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey) return;
     event.preventDefault();
     setObserved(true);
+    setHobbyReveal(value=>value+1);
     clearTimeout(observeTimer.current);
     const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     observeTimer.current=setTimeout(()=>{
@@ -73,7 +75,7 @@ export function App() {
       <h3>Talks</h3><dl className="cv-list"><div><dt>2025</dt><dd>Outlier-Robust Approach for High-dimensional Linear Structural Equation Models<small>Kyushu University / SNU Statistics DS Workshop</small></dd></div><div><dt>2025</dt><dd>Outlier Robust Causal Discovery<small>LG Electronics CTO Seminar for Research Engineers</small></dd></div></dl>
       <h3>Skills &amp; languages</h3><p>Python, R, MATLAB, <span className="latex-logo" role="img" aria-label="LaTeX"><span aria-hidden="true">L<span className="latex-a">A</span>T<span className="latex-e">E</span>X</span></span></p><p>Korean (native), English (fluent), Japanese (intermediate)</p>
     </section>
-    <Unobserved/>
+    <Unobserved revealKey={hobbyReveal}/>
     <section id="contact" className="lower-section contact" tabIndex="-1" aria-labelledby="contact-title"><h2 id="contact-title">Contact</h2><a href="mailto:brejsong@snu.ac.kr">brejsong@snu.ac.kr</a><div className="socials"><a href="https://scholar.google.com/citations?hl=en&user=JBpCyZYAAAAJ" target="_blank" rel="noreferrer">Scholar</a><a href="https://github.com/euijongsong" target="_blank" rel="noreferrer">GitHub</a></div></section>
     </main><footer><a href="#about">Back to top</a></footer>
   </div></>;
