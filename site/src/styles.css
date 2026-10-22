@@ -61,3 +61,18 @@ html{scroll-behavior:smooth}
 .reveal-pending .hobby-edge-reveal{stroke-dashoffset:1}
 .reveal-drawing .hobby-edge-reveal{animation:edge-reveal 1.2s cubic-bezier(.25,.1,.25,1) var(--edge-delay) both}
 @media(prefers-reduced-motion:reduce){.hobby-edge-reveal{stroke-dashoffset:0!important}}
+
+/* Quiet text links that belong to the page's typography. */
+.inline-link{color:inherit;text-decoration-color:#b5c0d5;text-underline-offset:4px;transition:color .15s,text-decoration-color .15s}
+.inline-link:hover,.inline-link:focus-visible{color:var(--link);text-decoration-color:currentColor}
+.contact-links{display:flex;flex-wrap:wrap;align-items:center;gap:12px 36px}
+.contact-links a{display:inline-flex;align-items:center;gap:10px;min-height:48px;border-radius:3px;color:var(--ink);text-decoration:none;transition:color .15s}
+.contact-links a span{text-decoration:underline;text-decoration-color:#c6cede;text-decoration-thickness:1px;text-underline-offset:6px;transition:text-decoration-color .15s}
+.contact-links a:hover,.contact-links a:focus-visible{color:var(--link)}
+.contact-links a:hover span,.contact-links a:focus-visible span{text-decoration-color:currentColor}
+.contact-links svg{width:18px;height:18px;flex-shrink:0;color:var(--muted);transition:color .15s}
+.contact-links a:hover svg,.contact-links a:focus-visible svg{color:currentColor}
+.contact-email{font-size:20px}
+.contact-profiles{display:flex;align-items:center;gap:28px;border-left:1px solid var(--rule);padding-left:36px}
+.contact-profiles a{gap:6px}
+@media(max-width:600px){.contact-links{align-items:flex-start;flex-direction:column;gap:8px}.contact-email{font-size:17px}.contact-profiles{border-left:0;padding-left:0;gap:28px}}

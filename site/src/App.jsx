@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowTopRightIcon } from '@radix-ui/react-icons';
+import { ArrowTopRightIcon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { DAG, Unobserved } from './Graphs.jsx';
 
+const labUrl='https://sites.google.com/view/gwpark/home?authuser=0';
 const publications=[
   {title:'Local Fisher Information Enables Sparse Causal Discovery',authors:['Euijong Song','Byeongguk Kang','Donghyeon Lee','Gunwoong Park'],venue:'Preprint · 2026',href:'https://arxiv.org/abs/2610.04291',link:'arXiv'},
   {title:'Discrete Score Matching Enables Causal Discovery from Count Data',authors:['Euijong Song','Hyewon Park','Gunwoong Park'],venue:'Preprint · 2026',href:'https://arxiv.org/abs/2609.39326',link:'arXiv'},
@@ -62,7 +63,7 @@ export function App() {
   return <><a className="skip-link" href="#about">Skip to introduction</a><div className="page">
     <header><h1>Euijong Song <span lang="ko">송의종</span></h1></header><main>
     <div className="hero"><section id="about" tabIndex="-1" className="biography" aria-label="About Euijong Song">
-      <p>I’m a Ph.D. student in statistics at Seoul National University and a member of the Causal AI Lab, where I’m advised by <span className="keep-together">Professor Gunwoong Park.</span></p>
+      <p>I’m a Ph.D. student in statistics at Seoul National University and a member of the <a className="inline-link" href={labUrl} target="_blank" rel="noreferrer">Causal AI Lab</a>, where I’m advised by <span className="keep-together">Professor Gunwoong Park.</span></p>
       <div id="research" tabIndex="-1" aria-label="Research interests"><p>My research focuses on making <span className="keep-together">non-identifiable</span> statistical objects identifiable under realistic assumptions. I study structural causal models beyond additive noise and develop <span className="keep-together">deep-learning</span> methods for causal discovery.</p>
       <p>Recently, I’ve also been interested in identifiability in measurement error models.</p></div>
     </section><DAG observed={observed} onObserve={observeU}/></div>
@@ -70,13 +71,22 @@ export function App() {
       {publications.map(paper=><Paper key={paper.title} paper={paper}/>)}
     </section>
     <section id="cv" className="lower-section" tabIndex="-1" aria-labelledby="cv-title"><h2 id="cv-title">CV</h2><h3>Education</h3>
-      <dl className="cv-list"><div><dt>2024 – Present</dt><dd>Ph.D. Student, Statistics, Seoul National University<small>Integrated M.S.–Ph.D. program · Causal AI Lab<br/>Advisor: Professor Gunwoong Park</small></dd></div><div><dt>2019 – 2024</dt><dd>B.S. in Life Sciences, Konkuk University</dd></div></dl>
+      <dl className="cv-list"><div><dt>2024 – Present</dt><dd>Ph.D. Student, Statistics, Seoul National University<small>Integrated M.S.–Ph.D. program · <a className="inline-link" href={labUrl} target="_blank" rel="noreferrer">Causal AI Lab</a><br/>Advisor: Professor Gunwoong Park</small></dd></div><div><dt>2019 – 2024</dt><dd>B.S. in Life Sciences, Konkuk University</dd></div></dl>
       <h3>Projects</h3><dl className="cv-list"><div><dt>2024</dt><dd>Mountain Accident Risk Zone Prediction<small>Korean National Fire Agency</small></dd></div></dl>
       <h3>Talks</h3><dl className="cv-list"><div><dt>2025</dt><dd>Outlier-Robust Approach for High-dimensional Linear Structural Equation Models<small>Kyushu University / SNU Statistics DS Workshop</small></dd></div><div><dt>2025</dt><dd>Outlier Robust Causal Discovery<small>LG Electronics CTO Seminar for Research Engineers</small></dd></div></dl>
       <h3>Skills &amp; languages</h3><p>Python, R, MATLAB, <span className="latex-logo" role="img" aria-label="LaTeX"><span aria-hidden="true">L<span className="latex-a">A</span>T<span className="latex-e">E</span>X</span></span></p><p>Korean (native), English (fluent), Japanese (intermediate)</p>
     </section>
     <Unobserved revealKey={hobbyReveal}/>
-    <section id="contact" className="lower-section contact" tabIndex="-1" aria-labelledby="contact-title"><h2 id="contact-title">Contact</h2><a href="mailto:brejsong@snu.ac.kr">brejsong@snu.ac.kr</a><div className="socials"><a href="https://scholar.google.com/citations?hl=en&user=JBpCyZYAAAAJ" target="_blank" rel="noreferrer">Scholar</a><a href="https://github.com/euijongsong" target="_blank" rel="noreferrer">GitHub</a></div></section>
+    <section id="contact" className="lower-section contact" tabIndex="-1" aria-labelledby="contact-title">
+      <h2 id="contact-title">Contact</h2>
+      <div className="contact-links">
+        <a className="contact-email" href="mailto:brejsong@snu.ac.kr"><EnvelopeClosedIcon aria-hidden="true"/><span>brejsong@snu.ac.kr</span></a>
+        <div className="contact-profiles">
+          <a href="https://scholar.google.com/citations?hl=en&user=JBpCyZYAAAAJ" target="_blank" rel="noreferrer"><span>Scholar</span><ArrowTopRightIcon aria-hidden="true"/></a>
+          <a href="https://github.com/euijongsong" target="_blank" rel="noreferrer"><span>GitHub</span><ArrowTopRightIcon aria-hidden="true"/></a>
+        </div>
+      </div>
+    </section>
     </main><footer><a href="#about">Back to top</a></footer>
   </div></>;
 }
