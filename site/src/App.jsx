@@ -6,8 +6,8 @@ const publications=[
   {title:'Local Fisher Information Enables Sparse Causal Discovery',authors:['Euijong Song','Byeongguk Kang','Donghyeon Lee','Gunwoong Park'],venue:'Preprint · 2026',href:'https://arxiv.org/abs/2610.04291',link:'arXiv'},
   {title:'Discrete Score Matching Enables Causal Discovery from Count Data',authors:['Euijong Song','Hyewon Park','Gunwoong Park'],venue:'Preprint · 2026',href:'https://arxiv.org/abs/2609.39326',link:'arXiv'},
   {title:'Convex Distance Operator Transport: A Convex and Geometry-Preserving Formulation',authors:['Junhyoung Chung','Euijong Song','Won Hwa Kim','Gunwoong Park'],venue:'ICML · 2026',href:'https://openreview.net/forum?id=nPC7M7XLEv',link:'OpenReview'},
-  {title:'Identifiability of Measurement-Error Variance in Errors-in-Variables Regression',authors:['Donguk Shin','Seunghwan Noh','Euijong Song','Gunwoong Park'],venue:'Under revision'},
   {title:'Plants recognize identity and intensity of herbivores to adaptively reconfigure metabolism',authors:['Min-Soo Choi','Myungju Go','Hyeok Gyun Son','Donguk Shin','Euijong Song','Jong-Hoon Noh','Gwanhyeong Yu','Yoonkyoung Choi','Gunwoong Park','Youngsung Joo'],venue:'Nature Communications · 2026',href:'https://www.nature.com/articles/s41467-026-77688-6',link:'Journal'},
+  {title:'Identifiability of Measurement-Error Variance in Errors-in-Variables Regression',authors:['Donguk Shin','Seunghwan Noh','Euijong Song','Gunwoong Park'],venue:'Under revision'},
 ];
 function Paper({paper}) {
   return <article className="paper"><h3>{paper.href?<a href={paper.href} target="_blank" rel="noreferrer">{paper.title}</a>:paper.title}</h3>
