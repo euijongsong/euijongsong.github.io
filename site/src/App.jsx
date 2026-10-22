@@ -63,7 +63,7 @@ export function App() {
     <header><h1>Euijong Song <span lang="ko">송의종</span></h1></header><main>
     <div className="hero"><section id="about" tabIndex="-1" className="biography" aria-label="About Euijong Song">
       <p>I’m a Ph.D. student in statistics at Seoul National University and a member of the Causal AI Lab, where I’m advised by <span className="keep-together">Professor Gunwoong Park.</span></p>
-      <div id="research" tabIndex="-1" aria-label="Research interests"><p>My research focuses on making non-identifiable statistical objects identifiable under realistic assumptions. I study structural causal models beyond additive noise and develop deep-learning methods for causal discovery.</p>
+      <div id="research" tabIndex="-1" aria-label="Research interests"><p>My research focuses on making <span className="keep-together">non-identifiable</span> statistical objects identifiable under realistic assumptions. I study structural causal models beyond additive noise and develop <span className="keep-together">deep-learning</span> methods for causal discovery.</p>
       <p>Recently, I’ve also been interested in identifiability in measurement error models.</p></div>
     </section><DAG observed={observed} onObserve={observeU}/></div>
     <section id="papers" tabIndex="-1" className="papers" aria-labelledby="papers-title"><div className="section-heading"><h2 id="papers-title">Papers</h2></div>
