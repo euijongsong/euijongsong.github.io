@@ -4,16 +4,18 @@ import { DAG, Unobserved } from './Graphs.jsx';
 
 const labUrl='https://sites.google.com/view/gwpark/home?authuser=0';
 const publications=[
-  {title:'Local Fisher Information Enables Sparse Causal Discovery',authors:['Euijong Song','Byeongguk Kang','Donghyeon Lee','Gunwoong Park'],venue:'Preprint · 2026',href:'https://arxiv.org/abs/2610.04291',link:'arXiv'},
-  {title:'Discrete Score Matching Enables Causal Discovery from Count Data',authors:['Euijong Song','Hyewon Park','Gunwoong Park'],venue:'Preprint · 2026',href:'https://arxiv.org/abs/2609.39326',link:'arXiv'},
-  {title:'Convex Distance Operator Transport: A Convex and Geometry-Preserving Formulation',authors:['Junhyoung Chung','Euijong Song','Won Hwa Kim','Gunwoong Park'],venue:'ICML · 2026',href:'https://openreview.net/forum?id=nPC7M7XLEv',link:'OpenReview'},
-  {title:'Plants recognize identity and intensity of herbivores to adaptively reconfigure metabolism',authors:['Min-Soo Choi','Myungju Go','Hyeok Gyun Son','Donguk Shin','Euijong Song','Jong-Hoon Noh','Gwanhyeong Yu','Yoonkyoung Choi','Gunwoong Park','Youngsung Joo'],venue:'Nature Communications · 2026',href:'https://www.nature.com/articles/s41467-026-77688-6',link:'Journal'},
-  {title:'Identifiability of Measurement-Error Variance in Errors-in-Variables Regression',authors:['Donguk Shin','Seunghwan Noh','Euijong Song','Gunwoong Park'],venue:'Under revision'},
+  {title:'Local Fisher Information Enables Sparse Causal Discovery',authors:['Euijong Song','Byeongguk Kang','Donghyeon Lee','Gunwoong Park'],venue:'ICML · Submitted',links:[['arXiv','https://arxiv.org/abs/2610.04291'],['OpenReview','https://openreview.net/forum?id=80MLEzgw9M']]},
+  {title:'Discrete Score Matching Enables Causal Discovery from Count Data',authors:['Euijong Song','Hyewon Park','Gunwoong Park'],venue:'ICML · Submitted',links:[['arXiv','https://arxiv.org/abs/2609.39326'],['OpenReview','https://openreview.net/forum?id=5zpTIz2Lly']]},
+  {title:'Causal Discovery from Quantile Separation',authors:['Euijong Song','Donguk Shin','Gunwoong Park'],venue:'ICML · Submitted',links:[['OpenReview','https://openreview.net/forum?id=3klNF8Ee7s']]},
+  {title:'Convex Distance Operator Transport: A Convex and Geometry-Preserving Formulation',authors:['Junhyoung Chung','Euijong Song','Won Hwa Kim','Gunwoong Park'],venue:'ICML · 2026',links:[['OpenReview','https://openreview.net/forum?id=nPC7M7XLEv']]},
+  {title:'Plants recognize identity and intensity of herbivores to adaptively reconfigure metabolism',authors:['Min-Soo Choi','Myungju Go','Hyeok Gyun Son','Donguk Shin','Euijong Song','Jong-Hoon Noh','Gwanhyeong Yu','Yoonkyoung Choi','Gunwoong Park','Youngsung Joo'],venue:'Nature Communications · 2026',links:[['Journal','https://www.nature.com/articles/s41467-026-77688-6']]},
+  {title:'Identifiability of Measurement-Error Variance in Errors-in-Variables Regression',authors:['Donguk Shin','Seunghwan Noh','Euijong Song','Gunwoong Park'],venue:'Journal of the American Statistical Association · Accepted, to appear 2027',links:[]},
 ];
 function Paper({paper}) {
-  return <article className="paper"><h3>{paper.href?<a href={paper.href} target="_blank" rel="noreferrer">{paper.title}</a>:paper.title}</h3>
+  const main=paper.links[0]?.[1];
+  return <article className="paper"><h3>{main?<a href={main} target="_blank" rel="noreferrer">{paper.title}</a>:paper.title}</h3>
     <p className="authors">{paper.authors.map((author,i)=><span key={author}>{author==='Euijong Song'?<strong>{author}</strong>:author}{i<paper.authors.length-1?',\u00a0':''}</span>)}</p>
-    <p className="paper-meta"><span>{paper.venue}</span>{paper.href&&<a href={paper.href} target="_blank" rel="noreferrer" aria-label={`${paper.link}: ${paper.title}`}>{paper.link}<ArrowTopRightIcon aria-hidden="true"/></a>}</p>
+    <p className="paper-meta"><span>{paper.venue}</span>{paper.links.map(([label,href])=><a key={href} href={href} target="_blank" rel="noreferrer" aria-label={`${label}: ${paper.title}`}>{label}<ArrowTopRightIcon aria-hidden="true"/></a>)}</p>
   </article>;
 }
 export function App() {
